@@ -2,10 +2,13 @@ package domain
 
 import (
 	"encoding/json"
+	"math/rand"
+
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	"github.com/cosmos/cosmos-sdk/x/simulation"
 	"github.com/gorilla/mux"
 	"github.com/iov-one/iovns/x/domain/client/cli"
 	"github.com/iov-one/iovns/x/domain/client/rest"
@@ -16,8 +19,9 @@ import (
 )
 
 var (
-	_ module.AppModule      = AppModule{}
-	_ module.AppModuleBasic = AppModuleBasic{}
+	_ module.AppModule           = AppModule{}
+	_ module.AppModuleBasic      = AppModuleBasic{}
+	_ module.AppModuleSimulation = AppModule{}
 )
 
 type AppModuleBasic struct{}
@@ -112,4 +116,27 @@ func (am AppModule) InitGenesis(ctx sdk.Context, data json.RawMessage) []abci.Va
 func (am AppModule) ExportGenesis(ctx sdk.Context) json.RawMessage {
 	gs := ExportGenesis(ctx, am.keeper)
 	return types.ModuleCdc.MustMarshalJSON(gs)
+}
+
+//____________________________________________________________________________
+
+func (am AppModule) GenerateGenesisState(input *module.SimulationState) {
+	panic("implement me")
+}
+
+// ProposalContents doesn't return any content functions for governance proposals.
+func (am AppModule) ProposalContents(simState module.SimulationState) []simulation.WeightedProposalContent {
+	return nil
+}
+
+func (am AppModule) RandomizedParams(r *rand.Rand) []simulation.ParamChange {
+	panic("implement me")
+}
+
+func (am AppModule) RegisterStoreDecoder(registry sdk.StoreDecoderRegistry) {
+	panic("implement me")
+}
+
+func (am AppModule) WeightedOperations(simState module.SimulationState) []simulation.WeightedOperation {
+	panic("implement me")
 }
