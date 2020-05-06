@@ -2,8 +2,9 @@ package simulation
 
 import (
 	"bytes"
-	"encoding/binary"
 	"fmt"
+
+	"github.com/iov-one/iovns/x/domain/keeper"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/iov-one/iovns/x/domain/types"
@@ -13,17 +14,17 @@ import (
 // DecodeStore unmarshals the KVPair's Value to the corresponding auction type
 func DecodeStore(cdc *codec.Codec, kvA, kvB kv.Pair) string {
 	switch {
-	case bytes.Equal(kvA.Key[:1], types.AuctionKeyPrefix):
-		var auctionA, auctionB types.Auction
-		cdc.MustUnmarshalBinaryLengthPrefixed(kvA.Value, &auctionA)
-		cdc.MustUnmarshalBinaryLengthPrefixed(kvB.Value, &auctionB)
-		return fmt.Sprintf("%v\n%v", auctionA, auctionB)
+	case bytes.Equal(kvA.Key[:1], keeper.AccountByOwnerPrefix):
+		var accA, accB types.Account
+		cdc.MustUnmarshalBinaryLengthPrefixed(kvA.Value, &accA)
+		cdc.MustUnmarshalBinaryLengthPrefixed(kvB.Value, &accB)
+		return fmt.Sprintf("%v\n%v", accA, accB)
 
-	case bytes.Equal(kvA.Key[:1], types.AuctionByTimeKeyPrefix),
-		bytes.Equal(kvA.Key[:1], types.NextAuctionIDKey):
-		auctionIDA := binary.BigEndian.Uint64(kvA.Value)
-		auctionIDB := binary.BigEndian.Uint64(kvB.Value)
-		return fmt.Sprintf("%d\n%d", auctionIDA, auctionIDB)
+	case bytes.Equal(kvA.Key[:1], keeper.DomainByOwnerPrefix):
+		var dA, dB types.Domain
+		cdc.MustUnmarshalBinaryLengthPrefixed(kvA.Value, &dA)
+		cdc.MustUnmarshalBinaryLengthPrefixed(kvB.Value, &dB)
+		return fmt.Sprintf("%v\n%v", dA, dB)
 
 	default:
 		panic(fmt.Sprintf("invalid %s key prefix %X", types.ModuleName, kvA.Key[:1]))
