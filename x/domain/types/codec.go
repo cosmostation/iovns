@@ -2,14 +2,17 @@ package types
 
 import (
 	"fmt"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 )
 
-// ModuleCdc instantiates a new codec for the domain module
-var ModuleCdc = codec.New()
+var ModuleCdc *codec.Codec
 
 func init() {
-	RegisterCodec(ModuleCdc)
+	cdc := codec.New()
+	RegisterCodec(cdc)
+	codec.RegisterCrypto(cdc)
+	ModuleCdc = cdc.Seal()
 }
 
 // RegisterCodec registers the sdk.Msg for the module

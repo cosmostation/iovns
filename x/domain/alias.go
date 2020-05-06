@@ -28,5 +28,11 @@ type (
 	Keeper = keeper.Keeper
 )
 
-// aliasing for funcs
-var NewKeeper = keeper.NewKeeper
+var (
+	// aliasing for funcs
+	NewKeeper = keeper.NewKeeper
+
+	// variable aliases
+	AccountByOwnerPrefix = keeper.AccountByOwnerPrefix
+	DomainByOwnerPrefix  = keeper.DomainByOwnerPrefix
+)
