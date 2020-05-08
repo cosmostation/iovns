@@ -154,7 +154,7 @@ func queryAccountsInDomainHandler(ctx sdk.Context, _ []string, req abci.RequestQ
 	// get accounts
 	accounts := make([]types.Account, 0, len(keys))
 	for _, key := range keys {
-		account, _ := k.GetAccount(ctx, query.Domain, accountKeyToString(key))
+		account, _ := k.GetAccount(ctx, query.Domain, types.AccountKeyToString(key))
 		accounts = append(accounts, account)
 	}
 	// return response
@@ -260,7 +260,7 @@ func queryAccountsFromOwnerHandler(ctx sdk.Context, _ []string, req abci.Request
 	// fill accounts
 	accounts := make([]types.Account, 0, len(keys))
 	for _, accKey := range keys {
-		_, domainName, accountName := splitOwnerToAccountKey(accKey)
+		_, domainName, accountName := types.SplitOwnerToAccountKey(accKey)
 		account, _ := k.GetAccount(ctx, domainName, accountName)
 		accounts = append(accounts, account)
 	}
@@ -360,7 +360,7 @@ func queryDomainsFromOwnerHandler(ctx sdk.Context, _ []string, req abci.RequestQ
 	// get domains
 	domains := make([]types.Domain, 0, len(keys))
 	for _, key := range keys {
-		_, domainName := splitOwnerToDomainKey(key)
+		_, domainName := types.SplitOwnerToDomainKey(key)
 		domain, _ := k.GetDomain(ctx, domainName)
 		domains = append(domains, domain)
 	}

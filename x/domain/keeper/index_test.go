@@ -1,8 +1,9 @@
 package keeper
 
 import (
-	"github.com/iov-one/iovns/x/domain/types"
 	"testing"
+
+	"github.com/iov-one/iovns/x/domain/types"
 )
 
 func Test_accountIndexing(t *testing.T) {
@@ -105,7 +106,7 @@ func Test_domainIndexing(t *testing.T) {
 // checks if the functions that convert address to indexed address and indexed address to address
 // are reversible and compatible
 func Test_addressIndexing(t *testing.T) {
-	if !(aliceAddr.String() == accAddrFromIndex(indexAddr(aliceAddr)).String()) {
+	if !(aliceAddr.String() == types.AccAddrFromIndex(types.IndexAddr(aliceAddr)).String()) {
 		t.Fatalf("mismatched addresses for: %s", aliceAddr.String())
 	}
 }

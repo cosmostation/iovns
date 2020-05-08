@@ -1,12 +1,18 @@
 package keeper
 
 import (
+	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/iov-one/iovns"
 	"github.com/iov-one/iovns/x/domain/types"
 )
 
 // contains all the functions to interact with the domain store
+
+// domainStore returns the domain store from the module's kvstore
+func domainStore(store sdk.KVStore) sdk.KVStore {
+	return prefix.NewStore(store, types.DomainStorePrefix)
+}
 
 // GetDomain returns the domain based on its name, if domain is not found ok will be false
 func (k Keeper) GetDomain(ctx sdk.Context, domainName string) (domain types.Domain, ok bool) {
@@ -71,7 +77,7 @@ func (k Keeper) DeleteDomain(ctx sdk.Context, domainName string) (exists bool) {
 	})
 	// delete keys in domain
 	for _, accountKey := range accountKeys {
-		k.DeleteAccount(ctx, domainName, accountKeyToString(accountKey))
+		k.DeleteAccount(ctx, domainName, types.AccountKeyToString(accountKey))
 	}
 	// unmap domain to owner
 	k.unmapDomainToOwner(ctx, domain)
@@ -102,7 +108,7 @@ func (k Keeper) FlushDomain(ctx sdk.Context, domainName string) (exists bool) {
 			continue
 		}
 		// otherwise delete
-		k.DeleteAccount(ctx, domainName, accountKeyToString(accountKey))
+		k.DeleteAccount(ctx, domainName, types.AccountKeyToString(accountKey))
 	}
 	// success
 	return
@@ -131,7 +137,7 @@ func (k Keeper) TransferDomain(ctx sdk.Context, newOwner sdk.AccAddress, domain 
 			continue
 		}
 		// get account
-		account, _ := k.GetAccount(ctx, domain.Name, accountKeyToString(accountKey))
+		account, _ := k.GetAccount(ctx, domain.Name, types.AccountKeyToString(accountKey))
 		// transfer it
 		k.TransferAccount(ctx, account, newOwner)
 	}

@@ -1,13 +1,29 @@
 package keeper
 
 import (
+	"time"
+
+	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/iov-one/iovns"
 	"github.com/iov-one/iovns/x/domain/types"
-	"time"
 )
 
 // contains all the functions to interact with the account store
+
+// accountStore returns the account store from the module's kvstore
+func accountStore(store sdk.KVStore) sdk.KVStore {
+	return prefix.NewStore(store, types.AccountStorePrefix)
+}
+
+// accountInDomainsStore returns the prefixed store containing
+// all the account keys contained in a domain
+func accountsInDomainStore(store sdk.KVStore, domain string) sdk.KVStore {
+	// get account store
+	accountStore := accountStore(store)
+	// get accounts in domain store
+	return prefix.NewStore(accountStore, types.GetDomainPrefixKey(domain))
+}
 
 // GetAccount finds an account based on its key name, if not found it will return
 // a zeroed account and false.
@@ -15,7 +31,7 @@ func (k Keeper) GetAccount(ctx sdk.Context, domainName, accountName string) (acc
 	// get domain prefix key
 	store := accountsInDomainStore(ctx.KVStore(k.storeKey), domainName)
 	// get account key
-	accountKey := getAccountKey(accountName)
+	accountKey := types.GetAccountKey(accountName)
 	// get account
 	accountBytes := store.Get(accountKey)
 	if accountBytes == nil {
@@ -40,7 +56,7 @@ func (k Keeper) SetAccount(ctx sdk.Context, account types.Account) {
 	// get prefixed store
 	store := accountsInDomainStore(ctx.KVStore(k.storeKey), account.Domain)
 	// get account key
-	accountKey := getAccountKey(account.Name)
+	accountKey := types.GetAccountKey(account.Name)
 	// set store
 	store.Set(accountKey, k.cdc.MustMarshalBinaryBare(account))
 }
@@ -51,7 +67,7 @@ func (k Keeper) DeleteAccount(ctx sdk.Context, domainName, accountName string) {
 	account, _ := k.GetAccount(ctx, domainName, accountName)
 	store := accountsInDomainStore(ctx.KVStore(k.storeKey), domainName)
 	// get account key
-	accountKey := getAccountKey(account.Name)
+	accountKey := types.GetAccountKey(account.Name)
 	store.Delete(accountKey)
 	// unmap account to owner
 	k.unmapAccountToOwner(ctx, account)
