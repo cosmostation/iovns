@@ -2,10 +2,12 @@ package app
 
 import (
 	"encoding/json"
-	"github.com/iov-one/iovns/x/configuration"
-	"github.com/iov-one/iovns/x/domain"
 	"io"
 	"os"
+
+	"github.com/iov-one/iovns/x/configuration"
+	"github.com/iov-one/iovns/x/domain"
+	"github.com/iov-one/iovns/x/domain/types"
 
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
@@ -149,7 +151,7 @@ func NewNameService(
 		gov.StoreKey, params.StoreKey, evidence.StoreKey, upgrade.StoreKey,
 		// iovns store keys
 		configuration.StoreKey,
-		domain.DomainStoreKey, domain.AccountStoreKey, domain.IndexStoreKey,
+		domain.StoreKey,
 	)
 	tKeys := sdk.NewTransientStoreKeys(staking.TStoreKey, params.TStoreKey)
 
@@ -286,7 +288,7 @@ func NewNameService(
 	// domain keeper
 	app.domainKeeper = domain.NewKeeper(
 		app.cdc,
-		keys[domain.DomainStoreKey],
+		keys[types.StoreKey],
 		app.configurationKeeper,
 		app.supplyKeeper,
 		app.subspaces[domain.ModuleName],

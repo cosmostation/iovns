@@ -9,12 +9,8 @@ import (
 const (
 	// ModuleNames aliases types.ModuleName
 	ModuleName = types.ModuleName
-	// DomainStoreKey aliases types.DomainStoreKey
-	DomainStoreKey = types.DomainStoreKey
-	// AccountStoreKey aliases types.AccountStoreKey
-	AccountStoreKey = types.AccountStoreKey
-	// IndexStoreKey aliases types.IndexStoreKey
-	IndexStoreKey = types.IndexStoreKey
+	// StoreKey aliases types.StoreKey
+	StoreKey = types.StoreKey
 	// QuerierRoute aliases types.QuerierRoute
 	QuerierRoute = types.QuerierRoute
 	// RouterKey aliases types.RouterKey
