@@ -2,22 +2,27 @@ package domain
 
 import (
 	"encoding/json"
+	"math/rand"
+
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	sim "github.com/cosmos/cosmos-sdk/x/simulation"
 	"github.com/gorilla/mux"
 	"github.com/iov-one/iovns/x/domain/client/cli"
 	"github.com/iov-one/iovns/x/domain/client/rest"
 	"github.com/iov-one/iovns/x/domain/keeper"
+	"github.com/iov-one/iovns/x/domain/simulation"
 	"github.com/iov-one/iovns/x/domain/types"
 	"github.com/spf13/cobra"
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
 var (
-	_ module.AppModule      = AppModule{}
-	_ module.AppModuleBasic = AppModuleBasic{}
+	_ module.AppModule           = AppModule{}
+	_ module.AppModuleBasic      = AppModuleBasic{}
+	_ module.AppModuleSimulation = AppModule{}
 )
 
 type AppModuleBasic struct{}
@@ -52,12 +57,12 @@ func (AppModuleBasic) RegisterRESTRoutes(ctx context.CLIContext, rtr *mux.Router
 
 // Get the root query command of this module
 func (AppModuleBasic) GetQueryCmd(cdc *codec.Codec) *cobra.Command {
-	return cli.GetQueryCmd(types.DomainStoreKey, cdc)
+	return cli.GetQueryCmd(types.StoreKey, cdc)
 }
 
 // Get the root tx command of this module
 func (AppModuleBasic) GetTxCmd(cdc *codec.Codec) *cobra.Command {
-	return cli.GetTxCmd(types.DomainStoreKey, cdc)
+	return cli.GetTxCmd(types.StoreKey, cdc)
 }
 
 // NewAppModule creates a new AppModule Object
@@ -112,4 +117,31 @@ func (am AppModule) InitGenesis(ctx sdk.Context, data json.RawMessage) []abci.Va
 func (am AppModule) ExportGenesis(ctx sdk.Context) json.RawMessage {
 	gs := ExportGenesis(ctx, am.keeper)
 	return types.ModuleCdc.MustMarshalJSON(gs)
+}
+
+//____________________________________________________________________________
+
+// GenerateGenesisState creates a randomized GenState of the cdp module
+func (AppModuleBasic) GenerateGenesisState(simState *module.SimulationState) {
+	panic("")
+}
+
+// ProposalContents doesn't return any content functions for governance proposals.
+func (AppModuleBasic) ProposalContents(_ module.SimulationState) []sim.WeightedProposalContent {
+	return nil
+}
+
+// RandomizedParams returns nil because cdp has no params.
+func (AppModuleBasic) RandomizedParams(r *rand.Rand) []sim.ParamChange {
+	panic("")
+}
+
+// RegisterStoreDecoder registers a decoder for cdp module's types
+func (AppModuleBasic) RegisterStoreDecoder(sdr sdk.StoreDecoderRegistry) {
+	sdr[StoreKey] = simulation.DecodeStore
+}
+
+// WeightedOperations returns the all the cdp module operations with their respective weights.
+func (am AppModule) WeightedOperations(simState module.SimulationState) []sim.WeightedOperation {
+	panic("")
 }
