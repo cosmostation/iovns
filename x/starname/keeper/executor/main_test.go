@@ -6,6 +6,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/iov-one/iovns/pkg/utils"
+	"github.com/iov-one/iovns/x/starname/keeper"
+	"github.com/iov-one/iovns/x/starname/types"
 	tmtypes "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
 	db "github.com/tendermint/tm-db"
@@ -17,6 +19,22 @@ import (
 var testCtx sdk.Context
 var testKey = sdk.NewKVStoreKey("test")
 var testCdc *codec.Codec
+var testKeeper keeper.Keeper
+var testAccount = types.Account{
+	Domain:     "a-super-domain",
+	Name:       utils.StrPtr("a-super-account"),
+	Owner:      keeper.CharlieKey,
+	ValidUntil: 10000,
+	Resources: []types.Resource{
+		{
+			URI:      "a-super-uri",
+			Resource: "a-super-res",
+		},
+	},
+	Certificates: []types.Certificate{types.Certificate("a-random-cert")},
+	Broker:       nil,
+	MetadataURI:  "metadata",
+}
 
 var aliceKey sdk.AccAddress
 var bobKey sdk.AccAddress
@@ -34,6 +52,8 @@ func newTest() error {
 		return err
 	}
 	testCtx = sdk.NewContext(ms, tmtypes.Header{Time: time.Now()}, true, log.NewNopLogger())
+	testKeeper = keeper.NewKeeper(testCdc, testKey, nil, nil, nil)
+	testKeeper.AccountStore(testCtx).Create(&testAccount)
 	return nil
 }
 
